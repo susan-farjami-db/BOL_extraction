@@ -1,0 +1,37 @@
+bundle:
+  name: bol_extraction
+
+# Variables let dev/prod (or any new target) override catalog, schema, and the
+# source volume path without touching pipeline or SQL code. Defaults below are
+# generic placeholders — override per target or on the CLI.
+variables:
+  catalog:
+    description: Unity Catalog where pipeline tables are written.
+    default: main
+  schema:
+    description: Schema (database) where pipeline tables are written.
+    default: bol_extraction
+  source_volume_path:
+    description: Full UC volume path containing the .tif BOL files.
+    default: /Volumes/${var.catalog}/${var.schema}/bol/
+
+include:
+  - resources/*.yml
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://<your-workspace>.cloud.databricks.com
+
+  prod:
+    mode: production
+    workspace:
+      host: https://<your-workspace>.cloud.databricks.com
+      root_path: /Workspace/Users/<your-user>@<your-domain>/.bundle/${bundle.name}/${bundle.target}
+    # Override variables per target as needed, or pass them on the CLI:
+    # `databricks bundle deploy --target prod --var "catalog=prod_catalog"`
+    variables:
+      catalog: main
+      schema: bol_extraction

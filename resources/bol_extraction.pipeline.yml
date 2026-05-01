@@ -1,0 +1,18 @@
+resources:
+  pipelines:
+    bol_extraction_pipeline:
+      name: bol_extraction_pipeline_${bundle.target}
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      serverless: true
+      photon: true
+      channel: PREVIEW
+
+      # Pipeline-level configuration parameters. Referenced from SQL via
+      # ${source_volume_path} substitution.
+      configuration:
+        source_volume_path: ${var.source_volume_path}
+
+      libraries:
+        - glob:
+            include: ../src/transformations/**
